@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Maze Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #2c3e50;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        
+        #game-container {
+            text-align: center;
+        }
+        
+        #maze {
+            display: inline-grid;
+            grid-template-columns: repeat(10, 40px);
+            grid-template-rows: repeat(10, 40px);
+            gap: 2px;
+            background-color: #34495e;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .cell {
+            width: 40px;
+            height: 40px;
+            background-color: #ecf0f1;
+        }
+        
+        .wall {
+            background-color: #2c3e50;
+        }
+        
+        .player {
+            background-color: #3498db;
+            border-radius: 50%;
+        }
+        
+        .goal {
+            background-color: #2ecc71;
+            border-radius: 5px;
+        }
+        
+        #message {
+            font-size: 24px;
+            margin: 20px 0;
+            min-height: 30px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Maze Game</h1>
+        <p>Use arrow keys to move the blue dot to the green goal!</p>
+        <div id="maze"></div>
+        <div id="message"></div>
+        <button onclick="resetGame()">Reset Game</button>
+    </div>
+
+    <script>
+        // Define the maze (0 = path, 1 = wall)
+        const mazeLayout = [
+            [0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 1, 0, 1, 0, 1, 0, 1, 1, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+            [1, 1, 0, 1, 1, 1, 1, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 0, 1, 1, 1, 1, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+        ];
+
+        let playerPos = { x: 0, y: 0 };
+        const goalPos = { x: 9, y: 9 };
+        let gameWon = false;
+
+        // Create the maze
+        function createMaze() {
+            const mazeElement = document.getElementById('maze');
+            mazeElement.innerHTML = '';
+            
+            for (let y = 0; y < mazeLayout.length; y++) {
+                for (let x = 0; x < mazeLayout[y].length; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.id = `cell-${x}-${y}`;
+                    
+                    if (mazeLayout[y][x] === 1) {
+                        cell.classList.add('wall');
+                    }
+                    
+                    mazeElement.appendChild(cell);
+                }
+            }
+            
+            updateDisplay();
+        }
+
+        // Update the display
+        function updateDisplay() {
+            // Clear previous player and goal
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.classList.remove('player', 'goal');
+            });
+            
+            // Add player
+            const playerCell = document.getElementById(`cell-${playerPos.x}-${playerPos.y}`);
+            if (playerCell) playerCell.classList.add('player');
+            
+            // Add goal
+            const goalCell = document.getElementById(`cell-${goalPos.x}-${goalPos.y}`);
+            if (goalCell) goalCell.classList.add('goal');
+            
+            // Check for win
+            if (playerPos.x === goalPos.x && playerPos.y === goalPos.y && !gameWon) {
+                gameWon = true;
+                document.getElementById('message').textContent = '🎉 You Won! 🎉';
+            }
+        }
+
+        // Move the player
+        function movePlayer(dx, dy) {
+            if (gameWon) return;
+            
+            const newX = playerPos.x + dx;
+            const newY = playerPos.y + dy;
+            
+            // Check boundaries
+            if (newX < 0 || newX >= 10 || newY < 0 || newY >= 10) return;
+            
+            // Check walls
+            if (mazeLayout[newY][newX] === 1) return;
+            
+            // Move player
+            playerPos.x = newX;
+            playerPos.y = newY;
+            updateDisplay();
+        }
+
+        // Handle keyboard input
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowUp':
+                    e.preventDefault();
+                    movePlayer(0, -1);
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    movePlayer(0, 1);
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    movePlayer(-1, 0);
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    movePlayer(1, 0);
+                    break;
+            }
+        });
+
+        // Reset the game
+        function resetGame() {
+            playerPos = { x: 0, y: 0 };
+            gameWon = false;
+            document.getElementById('message').textContent = '';
+            updateDisplay();
+        }
+
+        // Initialize the game
+        createMaze();
+    </script>
+</body>
+</html>
