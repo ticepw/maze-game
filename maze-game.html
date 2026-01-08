@@ -3,331 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Challenge Maze Game</title>
+    <title>Maze Game - 10 Levels</title>
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            font-family: 'Arial', sans-serif;
-            color: white;
-        }
-        
-        #game-container {
-            text-align: center;
-        }
-        
-        #stats {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            margin: 20px 0;
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        #timer {
-            color: #ffd700;
-        }
-        
-        #maze {
-            display: inline-grid;
-            grid-template-columns: repeat(15, 35px);
-            grid-template-rows: repeat(15, 35px);
-            gap: 2px;
-            background-color: #0f1e3d;
-            padding: 15px;
-            border-radius: 15px;
-            margin: 20px 0;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-        
-        .cell {
-            width: 35px;
-            height: 35px;
-            background-color: #ecf0f1;
-            transition: all 0.2s;
-        }
-        
-        .wall {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            border: 1px solid #1a252f;
-        }
-        
-        .player {
-            background: radial-gradient(circle, #3498db 0%, #2980b9 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 15px rgba(52, 152, 219, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            position: relative;
-        }
-        
-        .player::before {
-            content: '🧑';
-        }
-        
-        .goal {
-            background: radial-gradient(circle, #2ecc71 0%, #27ae60 100%);
-            border-radius: 5px;
-            box-shadow: 0 0 15px rgba(46, 204, 113, 0.8);
-        }
-        
-        .visited {
-            background-color: #7f8c8d !important;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
-        }
-        
-        #message {
-            font-size: 28px;
-            margin: 20px 0;
-            min-height: 35px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        .warning {
-            color: #e74c3c;
-            font-size: 18px;
-            margin: 10px 0;
-        }
-        
-        button {
-            padding: 12px 25px;
-            font-size: 16px;
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 10px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap');
+        body { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #0d1117; font-family: 'IBM Plex Mono', monospace; color: #58a6ff; }
+        #game-container { text-align: center; max-width: 600px; }
+        h1 { font-size: 28px; margin: 0 0 20px 0; color: #58a6ff; font-weight: 600; letter-spacing: 1px; }
+        #level-display { font-size: 18px; font-weight: 400; margin: 10px 0; color: #8b949e; }
+        #stats { display: flex; gap: 30px; justify-content: center; margin: 15px 0; font-size: 16px; color: #8b949e; }
+        #timer { color: #58a6ff; }
+        #maze { display: inline-grid; grid-template-columns: repeat(15, 32px); grid-template-rows: repeat(15, 32px); gap: 1px; background-color: #161b22; padding: 8px; margin: 20px 0; border: 1px solid #30363d; }
+        .cell { width: 32px; height: 32px; background-color: #0d1117; border: 1px solid #21262d; }
+        .wall { background: #30363d; border: 1px solid #30363d; }
+        .player { background: #58a6ff; border: 1px solid #58a6ff; display: flex; align-items: center; justify-content: center; }
+        .player::before { content: '●'; color: #0d1117; font-size: 20px; }
+        .goal { background: #3fb950; border: 1px solid #3fb950; }
+        .visited { background-color: #161b22 !important; border: 1px solid #30363d !important; }
+        #message { font-size: 18px; margin: 20px 0; min-height: 30px; color: #58a6ff; }
+        .warning { color: #f85149; font-size: 14px; margin: 10px 0; }
+        .level-info { font-size: 14px; color: #8b949e; margin: 5px 0; }
+        button { padding: 10px 20px; font-size: 14px; font-family: 'IBM Plex Mono', monospace; background: transparent; color: #58a6ff; border: 1px solid #30363d; cursor: pointer; margin: 5px; transition: all 0.2s; }
+        button:hover { background: #30363d; border-color: #58a6ff; }
+        button:active { transform: scale(0.98); }
+        .next-level-btn { color: #3fb950; border-color: #3fb950; }
+        .next-level-btn:hover { background: #3fb950; color: #0d1117; }
     </style>
 </head>
 <body>
     <div id="game-container">
-        <h1>🎯 Challenge Maze</h1>
-        <p class="warning">⚠️ WARNING: You cannot go backward! Choose your path wisely!</p>
+        <h1>🎯 Challenge Maze - 10 Levels</h1>
+        <div id="level-display">Level 1 / 10</div>
+        <p class="level-info" id="level-description"></p>
+        <p class="warning">⚠️ You cannot go backward!</p>
         <div id="stats">
             <div>Timer: <span id="timer">0:00</span></div>
             <div>Moves: <span id="moves">0</span></div>
         </div>
         <div id="maze"></div>
         <div id="message"></div>
-        <button onclick="resetGame()">🔄 Reset Game</button>
+        <div id="button-container">
+            <button onclick="resetLevel()">🔄 Start Over from Level 1</button>
+            <button id="next-level-btn" onclick="nextLevel()" style="display: none;" class="next-level-btn">➡️ Next Level</button>
+        </div>
     </div>
 
     <script>
-        // Define a more complex maze (0 = path, 1 = wall)
-        const mazeLayout = [
-            [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
-            [1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-            [1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
-            [0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-            [0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
-            [1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        const levels = [
+            {m:[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],d:"Wide open - Learn the controls"},
+            {m:[[0,0,0,0,0,0,0,0,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,0,1,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,1,0,1,1,1,1,0],[0,1,1,1,1,1,1,1,1,0,1,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,0,1,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],[0,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[0,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],d:"Simple zigzag"},
+            {m:[[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],[0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],[0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,0,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],[0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],[0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,0,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],d:"Multiple paths"},
+            {m:[[0,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,0,0]],d:"Snake - Only ONE path"},
+            {m:[[0,0,0,0,1,0,0,0,1,0,0,0,1,0,0],[1,1,1,0,1,0,1,0,1,0,1,0,1,0,1],[0,0,0,0,0,0,1,0,0,0,1,0,0,0,1],[0,1,1,1,1,1,1,0,1,1,1,0,1,0,1],[0,1,0,0,0,0,0,0,1,0,0,0,1,0,0],[0,1,0,1,1,1,1,1,1,0,1,1,1,1,0],[0,0,0,1,0,0,0,0,0,0,1,0,0,0,0],[1,1,1,1,0,1,1,1,1,1,1,0,1,1,1],[0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],[0,1,1,1,1,1,0,1,1,1,1,1,1,0,1],[0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],[0,1,0,1,1,1,1,1,0,1,1,1,1,0,1],[0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,1,1,1,0,1,1,1,1,1,0,1,1,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],d:"Narrow corridors"},
+            {m:[[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],[0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],[0,1,1,1,0,1,1,1,0,1,1,1,0,1,0],[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],[1,1,0,1,1,1,0,1,1,1,0,1,1,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,1,1,1,1,0,1,1,1,1,1,0,1,1],[0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],[0,1,0,1,1,1,1,1,0,1,1,1,1,0,1],[0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,1,1,1,0,1,1,1,1,1,0,1,1,0,1],[0,0,0,0,0,1,0,0,0,0,0,1,0,0,1],[0,1,1,1,1,1,0,1,1,1,1,1,0,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],d:"First dead ends"},
+            {m:[[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],[1,1,0,1,0,1,0,1,0,1,0,1,0,1,0],[0,0,0,0,0,1,0,0,0,1,0,0,0,1,0],[0,1,1,1,1,1,1,1,1,1,1,1,0,1,0],[0,1,0,0,0,0,0,1,0,0,0,0,0,0,0],[0,1,0,1,1,1,0,1,0,1,1,1,1,1,1],[0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,1,1,1,0,1,1,1,1,1,0,1,1,0,1],[0,0,0,0,0,1,0,0,0,0,0,1,0,0,1],[0,1,1,1,1,1,0,1,1,1,1,1,0,1,1],[0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],[0,1,0,1,1,1,1,1,0,1,1,1,1,0,1],[0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,1,1,1,0,1,1,1,1,1,0,1,1,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],d:"Complex with traps"},
+            {m:[[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],[1,1,0,1,1,1,0,1,1,1,0,1,1,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,1,0,0,0,0,0,1,0,0,0,0,0,0,0],[0,1,0,1,1,1,0,1,0,1,1,1,1,1,1],[0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,1,1,1,0,1,1,1,1,1,0,1,1,0,1],[0,0,0,0,0,1,0,0,0,0,0,1,0,0,1],[0,1,1,1,1,1,0,1,1,1,1,1,0,1,1],[0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],[0,1,0,1,1,1,1,1,0,1,1,1,1,0,1],[0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,1,1,1,0,1,1,1,1,1,1,1,1,0,0]],d:"Very tight - Brutal"},
+            {m:[[0,0,0,1,0,1,0,1,0,1,0,1,0,1,0],[1,1,0,1,0,1,0,1,0,1,0,1,0,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],[0,1,0,1,0,1,0,1,0,1,0,1,1,0,1],[0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],[1,1,1,1,1,1,0,1,1,1,1,1,0,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[0,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],[0,1,0,1,0,1,0,1,0,1,0,1,1,0,1],[0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,0,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],d:"Maze within maze"},
+            {m:[[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,0,1,1,1,1,1,0,1,1,1,1],[0,0,0,0,0,1,0,0,0,0,0,1,0,0,1],[0,1,1,1,1,1,0,1,1,1,1,1,0,1,1],[0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],[0,1,0,1,1,1,1,1,0,1,1,1,1,0,1],[0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,1,1,1,0,1,1,1,1,1,0,1,1,1,1],[0,0,0,0,0,1,0,0,0,0,0,1,0,0,1],[0,1,1,1,1,1,0,1,1,1,1,1,0,1,1],[0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],[0,1,0,1,1,1,1,1,0,1,1,1,1,0,1],[0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,0,0]],d:"FINAL BOSS"}
         ];
 
-        let playerPos = { x: 0, y: 0 };
-        const goalPos = { x: 14, y: 14 };
-        let gameWon = false;
-        let visitedCells = new Set();
-        let moveCount = 0;
-        let timerStarted = false;
-        let timerInterval = null;
-        let elapsedSeconds = 0;
+        let lvl = 0, pos = {x:0,y:0}, goal = {x:14,y:14}, won = false, visited = new Set(), moves = 0, started = false, timer = null, sec = 0;
 
-        // Create the maze
-        function createMaze() {
-            const mazeElement = document.getElementById('maze');
-            mazeElement.innerHTML = '';
-            
-            for (let y = 0; y < mazeLayout.length; y++) {
-                for (let x = 0; x < mazeLayout[y].length; x++) {
+        function create() {
+            const maze = document.getElementById('maze');
+            maze.innerHTML = '';
+            const layout = levels[lvl].m;
+            for (let y = 0; y < 15; y++) {
+                for (let x = 0; x < 15; x++) {
                     const cell = document.createElement('div');
                     cell.className = 'cell';
-                    cell.id = `cell-${x}-${y}`;
-                    
-                    if (mazeLayout[y][x] === 1) {
-                        cell.classList.add('wall');
-                    }
-                    
-                    mazeElement.appendChild(cell);
+                    cell.id = `c${x}-${y}`;
+                    if (layout[y][x] === 1) cell.classList.add('wall');
+                    maze.appendChild(cell);
                 }
             }
-            
-            visitedCells.add(`${playerPos.x},${playerPos.y}`);
-            updateDisplay();
+            visited.add('0,0');
+            update();
         }
 
-        // Start the timer
         function startTimer() {
-            if (timerStarted) return;
-            timerStarted = true;
-            
-            timerInterval = setInterval(() => {
-                elapsedSeconds++;
-                const minutes = Math.floor(elapsedSeconds / 60);
-                const seconds = elapsedSeconds % 60;
-                document.getElementById('timer').textContent = 
-                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            if (started) return;
+            started = true;
+            timer = setInterval(() => {
+                sec++;
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                document.getElementById('timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
             }, 1000);
         }
 
-        // Stop the timer
-        function stopTimer() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-        }
-
-        // Update the display
-        function updateDisplay() {
-            // Clear previous player and goal
-            document.querySelectorAll('.cell').forEach(cell => {
-                cell.classList.remove('player', 'goal');
+        function update() {
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('player','goal'));
+            visited.forEach(p => {
+                const [x,y] = p.split(',').map(Number);
+                const cell = document.getElementById(`c${x}-${y}`);
+                if (cell && !cell.classList.contains('wall')) cell.classList.add('visited');
             });
             
-            // Mark visited cells
-            visitedCells.forEach(pos => {
-                const [x, y] = pos.split(',').map(Number);
-                const cell = document.getElementById(`cell-${x}-${y}`);
-                if (cell && !cell.classList.contains('wall')) {
-                    cell.classList.add('visited');
+            const pc = document.getElementById(`c${pos.x}-${pos.y}`);
+            if (pc) { pc.classList.add('player'); pc.classList.remove('visited'); }
+            
+            const gc = document.getElementById(`c${goal.x}-${goal.y}`);
+            if (gc) gc.classList.add('goal');
+            
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('level-display').textContent = `Level ${lvl + 1} / 10`;
+            document.getElementById('level-description').textContent = levels[lvl].d;
+            
+            if (pos.x === goal.x && pos.y === goal.y && !won) {
+                won = true;
+                if (timer) clearInterval(timer);
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                if (lvl === 9) {
+                    document.getElementById('message').textContent = `🏆 ALL LEVELS COMPLETE! Time: ${m}:${s.toString().padStart(2,'0')} 🏆`;
+                } else {
+                    document.getElementById('message').textContent = `✅ Level ${lvl + 1} Complete! Time: ${m}:${s.toString().padStart(2,'0')}`;
+                    document.getElementById('next-level-btn').style.display = 'inline-block';
                 }
-            });
-            
-            // Add player
-            const playerCell = document.getElementById(`cell-${playerPos.x}-${playerPos.y}`);
-            if (playerCell) {
-                playerCell.classList.add('player');
-                playerCell.classList.remove('visited');
-            }
-            
-            // Add goal
-            const goalCell = document.getElementById(`cell-${goalPos.x}-${goalPos.y}`);
-            if (goalCell) goalCell.classList.add('goal');
-            
-            // Update move counter
-            document.getElementById('moves').textContent = moveCount;
-            
-            // Check for win
-            if (playerPos.x === goalPos.x && playerPos.y === goalPos.y && !gameWon) {
-                gameWon = true;
-                stopTimer();
-                const minutes = Math.floor(elapsedSeconds / 60);
-                const seconds = elapsedSeconds % 60;
-                document.getElementById('message').textContent = 
-                    `🎉 You Won in ${minutes}:${seconds.toString().padStart(2, '0')}! 🎉`;
             }
         }
 
-        // Move the player
-        function movePlayer(dx, dy) {
-            if (gameWon) return;
-            
-            const newX = playerPos.x + dx;
-            const newY = playerPos.y + dy;
-            
-            // Check boundaries
-            if (newX < 0 || newX >= 15 || newY < 0 || newY >= 15) return;
-            
-            // Check walls
-            if (mazeLayout[newY][newX] === 1) return;
-            
-            // Check if already visited (can't go backward!)
-            const cellKey = `${newX},${newY}`;
-            if (visitedCells.has(cellKey)) {
-                return; // Can't move to a cell you've already been to!
-            }
-            
-            // Start timer on first move
-            if (!timerStarted) {
-                startTimer();
-            }
-            
-            // Move player
-            playerPos.x = newX;
-            playerPos.y = newY;
-            moveCount++;
-            visitedCells.add(cellKey);
-            updateDisplay();
+        function move(dx, dy) {
+            if (won) return;
+            const nx = pos.x + dx, ny = pos.y + dy;
+            if (nx < 0 || nx >= 15 || ny < 0 || ny >= 15) return;
+            if (levels[lvl].m[ny][nx] === 1) return;
+            const k = `${nx},${ny}`;
+            if (visited.has(k)) return;
+            if (!started) startTimer();
+            pos.x = nx; pos.y = ny; moves++;
+            visited.add(k);
+            update();
         }
 
-        // Handle keyboard input
         document.addEventListener('keydown', (e) => {
-            switch(e.key) {
-                case 'ArrowUp':
-                    e.preventDefault();
-                    movePlayer(0, -1);
-                    break;
-                case 'ArrowDown':
-                    e.preventDefault();
-                    movePlayer(0, 1);
-                    break;
-                case 'ArrowLeft':
-                    e.preventDefault();
-                    movePlayer(-1, 0);
-                    break;
-                case 'ArrowRight':
-                    e.preventDefault();
-                    movePlayer(1, 0);
-                    break;
-            }
+            if (e.key === 'ArrowUp') { e.preventDefault(); move(0,-1); }
+            else if (e.key === 'ArrowDown') { e.preventDefault(); move(0,1); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); move(-1,0); }
+            else if (e.key === 'ArrowRight') { e.preventDefault(); move(1,0); }
         });
 
-        // Reset the game
-        function resetGame() {
-            playerPos = { x: 0, y: 0 };
-            gameWon = false;
-            visitedCells.clear();
-            visitedCells.add('0,0');
-            moveCount = 0;
-            elapsedSeconds = 0;
-            timerStarted = false;
-            stopTimer();
+        function resetLevel() {
+            lvl = 0; pos = {x:0,y:0}; won = false; visited.clear(); visited.add('0,0'); moves = 0; sec = 0; started = false;
+            if (timer) clearInterval(timer);
             document.getElementById('timer').textContent = '0:00';
             document.getElementById('moves').textContent = '0';
             document.getElementById('message').textContent = '';
-            
-            // Clear all visited cells visually
-            document.querySelectorAll('.visited').forEach(cell => {
-                cell.classList.remove('visited');
-            });
-            
-            updateDisplay();
+            document.getElementById('next-level-btn').style.display = 'none';
+            document.querySelectorAll('.visited').forEach(c => c.classList.remove('visited'));
+            create();
         }
 
-        // Initialize the game
-        createMaze();
+        function nextLevel() {
+            if (lvl < 9) {
+                lvl++; pos = {x:0,y:0}; won = false; visited.clear(); visited.add('0,0'); moves = 0; sec = 0; started = false;
+                if (timer) clearInterval(timer);
+                document.getElementById('timer').textContent = '0:00';
+                document.getElementById('moves').textContent = '0';
+                document.getElementById('message').textContent = '';
+                document.getElementById('next-level-btn').style.display = 'none';
+                document.querySelectorAll('.visited').forEach(c => c.classList.remove('visited'));
+                create();
+            }
+        }
+
+        create();
     </script>
 </body>
 </html>
